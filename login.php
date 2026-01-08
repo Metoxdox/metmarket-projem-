@@ -1,7 +1,6 @@
 <?php
 require 'db.php';
 
-// If user is already logged in, redirect them
 if (isset($_SESSION['user_id'])) {
     header("Location: index.php");
     exit;
@@ -10,16 +9,16 @@ if (isset($_SESSION['user_id'])) {
 $error = '';
 $success = '';
 
-// Check if user just registered
+
 if (isset($_GET['registered'])) {
-    $success = "Account created successfully! Please login.";
+    $success = "Hesabiniz basarili sekilde olusturuldu! Lutfen giris yapin.";
 }
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $email = $_POST['email'];
     $password = $_POST['password'];
 
-    // Secure Prepared Statement
+ 
     $stmt = $conn->prepare("SELECT id, username, password, role FROM users WHERE email = ?");
     $stmt->bind_param("s", $email);
     $stmt->execute();
@@ -27,14 +26,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     if ($result->num_rows === 1) {
         $user = $result->fetch_assoc();
-        // Verify Hashed Password
+       
         if (password_verify($password, $user['password'])) {
-            // Set Session
+         
             $_SESSION['user_id'] = $user['id'];
             $_SESSION['username'] = $user['username'];
             $_SESSION['role'] = $user['role'];
 
-            // Role Based Redirect
+         
             if ($user['role'] === 'admin') {
                 header("Location: admin_dashboard.php");
             } else {
@@ -42,10 +41,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             }
             exit;
         } else {
-            $error = "Incorrect password.";
+            $error = "Yanlis Sifre.";
         }
     } else {
-        $error = "User not found.";
+        $error = "Kullanici Adi.";
     }
 }
 ?>
@@ -55,10 +54,26 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <head>
     <link rel="stylesheet" href="style.css">
     <title>Giris - Met Market</title>
+    
+    <style>
+       
+        body {
+            
+            background-image: url('photos/giris.jpg'); 
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            height: 100vh; 
+            margin: 0;
+        }
+        
+    </style>
+
 </head>
 <body>
     <div class="form-container">
-        <h2 style="text-align:center; color: 	#85d33b; margin-bottom:20px;">Met Markete Hosgeldiniz</h2>
+        <h2 style="text-align:center; color: #85d33b; margin-bottom:20px;">Met Markete Hosgeldiniz</h2>
         
         <?php if($success): ?>
             <div class="alert" style="background-color: #d4edda; color: #155724;">
@@ -77,7 +92,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <div class="form-group">
                 <input type="password" name="password" placeholder="Password" required>
             </div>
-            <button type="submit" class="btn">Login</button>
+            <button type="submit" class="btn">Giris</button>
         </form>
 
         <hr style="margin: 20px 0; border: 0; border-top: 1px solid #eee;">
